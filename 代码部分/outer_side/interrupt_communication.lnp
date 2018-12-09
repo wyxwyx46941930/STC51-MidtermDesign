@@ -1,0 +1,4 @@
+"STARTUP.obj",
+"main.obj" 
+TO "interrupt_communication" 
+RAMSIZE(256) 

@@ -1,0 +1,119 @@
+<html>
+
+<head>
+  <title>REMOTE LOCK SETTING SYSTEM.</title>
+  <link rel="stylesheet" href="/bulma.css">
+</head>
+
+<body>
+      <h1 class="title is-1 has-text-centered dividing-header">LOCK</h1>      
+      <div class="section">
+          <article id = "lock-state" class="media">
+            CURRENT STATE
+          </article>
+          
+        <article class="media">      
+            <div class="field has-addons" style = "display:-webkit-box; -webkit-box-pack:center;margin-left: auto;margin-right: auto">          
+              <div class="control">
+                  <label class="button is-static">NEW PASSWORD : </label>            
+              </div>
+              <div class="control">
+                <input class="input" type="text" id="new-password" pattern="[0-9]{8}" title="8 numbers" />            
+              </div>
+              <div class="control">
+                <button onclick="sendNewPassword()" class="button is-danger"> SUBMIT </button>             
+              </div>
+            </div>
+        </article>
+      </div>
+</body>
+
+<script>
+  let lock_state = document.getElementById("lock-state")
+  let new_password = document.getElementById('new-password')
+  let password_reset_state = document.getElementById("password-resetting-state")
+  let poll__fail_times = 0
+  let re = new RegExp('^[0-9]{8}$')
+
+  function sendNewPassword() {
+    // set button unclickable
+    // document.getElementById("pw-reset-btn").
+    var xhttp = new XMLHttpRequest();
+    let val = new_password.value 
+    // console.log(new_password.value)
+    if(re.test(val)) {
+      xhttp.open("POST", 'resetpw', true)
+      xhttp.send(val)
+    } else {
+      alert("Invalid input, password should only contain 8 number!!")    
+    }
+    new_password.value = ""
+  }
+
+  const timeId = setInterval(() => {
+    // ask server the state of the lock 
+    var xhttp;
+    xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+      if (this.readyState == 4 && this.status == 200) {
+        // console.log(this.responseText)
+        lock_state.textContent = this.responseText
+      }
+      // else if (this.status != 200){
+      //     poll__fail_times ++
+      //     if(poll__fail_times >= 10) {
+      //         console.log("falied too much time, cancel timer automatically!")
+      //         clearInterval(timeId)
+      //     }
+      // }
+    };
+    xhttp.open("GET", "poll", true);
+    xhttp.send();
+  }, 1000);
+
+</script>
+
+<style>
+.dividing-header {
+  margin-top: 1em;
+  margin-bottom: 2em;
+}
+
+.section {
+  padding: 2rem 1.5rem;
+}
+
+.media {
+  max-width: 600px;
+  margin: 0 auto;
+  border: 1px solid #e6e7e9;
+  padding: 1em 1.5em 0.5em 1.5em;
+  border-radius: 0.3em;
+}
+
+.media + .media {
+  margin-top: 1.5rem;
+}
+
+.blue-border {
+  border: 1px solid #3373dc !important;
+}
+
+.tag {
+  font-size: 0.6rem !important;
+}
+
+.icon {
+  cursor: pointer;
+}
+
+.image.is-24x24 {
+  display: inline;
+  position: relative;
+  top: 5px;
+  border-radius: 20px;
+}
+
+</style>
+
+</html>
